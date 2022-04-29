@@ -7,12 +7,14 @@ import './App.css';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 import { Program, Provider, web3 } from '@project-serum/anchor';
 import idl from './idl.json';
+import kp from './keypair.json';
 
 // systemprogram is a reference to the solana runtime
 const { SystemProgram, Keypair } = web3;
 
-// create a keypair for the account that will hold the GIF data
-let baseAccount = Keypair.generate();
+const arr = Object.values(kp._keypair.secretKey)
+const secret = new Uint8Array(arr)
+const baseAccount = web3.Keypair.fromSecretKey(secret)
 
 // get our program's id from the IDL file.
 const programID = new PublicKey(idl.metadata.address);
@@ -82,14 +84,27 @@ const App = () => {
   }
 
   const sendGif = async () => {
-    if (inputValue.length > 0) {
-      console.log(`Gif link: ${inputValue}`);
-      setGifList([...gifList, inputValue]);
-      setInputValue('');
-    } else {
-      console.log('No gif link provided!');
+    if (inputValue.length === 0) {
+      console.log("No GIF link provided!");
+      return
     }
-  }
+    setInputValue('');
+    console.log('GIF Link:', inputValue);
+    try {
+      const provider = getProvider();
+      const program = new Program(idl, programID, provider);
+      await program.rpc.addGif(inputValue, {
+        accounts: {
+          baseAccount: baseAccount.publicKey,
+          user: provider.wallet.publicKey,
+        },
+      });
+      console.log("GIF successfully sent to program", inputValue)
+      await getGifList();
+    } catch (error) {
+      console.log("Error sending GIF:", error);
+    }
+  };
 
   const onInputChange = (event) => {
     const { value } = event.target;
