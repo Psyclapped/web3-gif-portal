@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import twitterLogo from './assets/twitter-logo.svg';
 import './App.css';
+import idl from './idl.json';
 
 // Change this up to be your Twitter if you want.
 const TWITTER_HANDLE = 'psyclapped';
