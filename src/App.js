@@ -4,7 +4,26 @@
 import React, { useEffect, useState } from 'react';
 import twitterLogo from './assets/twitter-logo.svg';
 import './App.css';
+import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
+import { Program, Provider, web3 } from '@project-serum/anchor';
 import idl from './idl.json';
+
+// systemprogram is a reference to the solana runtime
+const { SystemProgram, Keypair } = web3;
+
+// create a keypair for the account that will hold the GIF data
+let baseAccount = Keypair.generate();
+
+// get our program's id from the IDL file.
+const programID = new PublicKey(idl.metadata.address);
+
+// set out network to devnet
+const network = clusterApiUrl('devnet');
+
+// controls how we want to acknowledge when a transaction is "done"
+const opts = {
+  preflightCommitment: "processed"
+}
 
 // Change this up to be your Twitter if you want.
 const TWITTER_HANDLE = 'psyclapped';
@@ -75,6 +94,14 @@ const App = () => {
   const onInputChange = (event) => {
     const { value } = event.target;
     setInputValue(value);
+  }
+
+  const getProvider = () => {
+    const connection = new Connection(network, opts.preflightCommitment);
+    const provider = new Provider(
+      connection, window.solana, opts.preflightCommitment,
+    );
+    return provider;
   }
 
   const renderNotConnectedContainer = () => (
