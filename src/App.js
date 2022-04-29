@@ -81,7 +81,7 @@ const App = () => {
     }
   }
 
-  const sendGif = async () => {
+/*   const sendGif = async () => {
     if (inputValue.length > 0) {
       console.log(`Gif link: ${inputValue}`);
       setGifList([...gifList, inputValue]);
@@ -89,7 +89,7 @@ const App = () => {
     } else {
       console.log('No gif link provided!');
     }
-  }
+  } */
 
   const onInputChange = (event) => {
     const { value } = event.target;
