@@ -81,15 +81,28 @@ const App = () => {
     }
   }
 
-/*   const sendGif = async () => {
-    if (inputValue.length > 0) {
-      console.log(`Gif link: ${inputValue}`);
-      setGifList([...gifList, inputValue]);
-      setInputValue('');
-    } else {
-      console.log('No gif link provided!');
+  const sendGif = async () => {
+    if (inputValue.length === 0) {
+      console.log("No GIF link provided!");
+      return
     }
-  } */
+    setInputValue('');
+    console.log('GIF Link:', inputValue);
+    try {
+      const provider = getProvider();
+      const program = new Program(idl, programID, provider);
+      await program.rpc.addGif(inputValue, {
+        accounts: {
+          baseAccount: baseAccount.publicKey,
+          user: provider.wallet.publicKey,
+        },
+      });
+      console.log("GIF successfully sent to program", inputValue)
+      await getGifList();
+    } catch (error) {
+      console.log("Error sending GIF:", error);
+    }
+  };
 
   const onInputChange = (event) => {
     const { value } = event.target;
